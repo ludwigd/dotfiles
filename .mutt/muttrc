@@ -1,0 +1,97 @@
+####################
+# source account configs
+####################
+
+source "~/.mutt/personal.conf"
+
+####################
+# alias file
+####################
+
+set alias_file = "~/.mutt/aliases"
+set sort_alias = alias
+set reverse_alias = yes
+source $alias_file
+
+####################
+# better colors
+####################
+
+color normal color231 default
+color hdrdefault white default
+color quoted cyan default
+color quoted1 color244 default
+color quoted2 color244 default
+color quoted3 color244 default
+color signature red default
+color indicator brightwhite blue
+color error brightred black
+color status white brightblack
+color tree color250 default
+color tilde white default
+color message brightcyan black
+color markers brightcyan black
+color attachment color179 default
+color search black green
+
+color header white default ^from:
+color header color031 default ^to
+color header color031 default ^cc
+color header brightgreen default ^subject:
+color header color155 default ^date
+
+color body color045 default "(ftp|http|https)://[^ ]+"
+color body color045 default "<?[-a-z_0-9.%$]+@[-a-z_0-9.]+\\.[-a-z][-a-z]+>?"
+
+color index color250 default ".*"
+color index brightcolor155 default  ~N
+
+color body color084 default "^gpg: Good signature .*"
+color body brightcolor196 default "^gpg: BAD signature from.*"
+color body color241 default "^gpg: .* aka .*"
+
+####################
+# view html and links
+####################
+
+set mailcap_path = ~/.mutt/mailcap
+auto_view text/html
+unset markers
+
+####################
+# index view configuration
+####################
+
+set sort=threads
+set sort_aux=last-date-received
+set sort_re
+set strict_threads
+set mark_old
+unset wait_key
+bind index \Cd purge-message
+
+####################
+# compose
+####################
+
+set editor = "vim"
+set edit_headers
+
+####################
+# sidebar configuration
+####################
+
+set mail_check_stats
+set sidebar_visible 
+set sidebar_width = 20
+set sidebar_format = "%B%* %?N?%N/?%S"
+bind index,pager \Cp sidebar-prev
+bind index,pager \Cn sidebar-next
+bind index,pager \Co sidebar-open
+bind index,pager B sidebar-toggle-visible
+
+###################
+# keybindings and macros
+###################
+
+macro index S ":set confirmappend=no delete=yes\n<tag-prefix><save-message>=Archive\n<sync-mailbox>:set confirmappend=yes delete=ask-yes\n"

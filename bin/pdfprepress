@@ -1,0 +1,28 @@
+#!/bin/bash
+set -eo  pipefail
+
+main () {
+    local file=$1
+    
+    if [[ -z "$file" ]]; then
+	echo "Usage: pdfprepress <file>"
+    else
+	if [[ ! $(which gs) ]]; then
+	    exit 1
+	fi
+	
+	name=$(basename $file .pdf)
+	of=$(echo $name"_pdfprepress.pdf")
+
+	gs -sDEVICE=pdfwrite \
+	   -dCompatibilityLevel=1.4 \
+	   -dPDFSETTINGS=/prepress \
+	   -dNOPAUSE \
+	   -dQUIET \
+	   -dBATCH \
+	   -sOutputFile=$of \
+	   $file
+    fi
+}
+
+main "$@"

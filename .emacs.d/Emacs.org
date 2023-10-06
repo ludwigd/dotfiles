@@ -1,0 +1,287 @@
+#+TITLE: ludwigd's Emacs Configuration
+#+PROPERTY: header-args:emacs-lisp :tangle ~/.emacs.d/init.el :mkdirp yes
+
+* Usage
+
+This is my Emacs configuration. It is written using [[https://orgmode.org][Org-Mode]]. If you
+are viewing this file with Emacs, use =C-c C-v t= or =M-x
+org-babel-tangle= to generate an =init.el= out of it. But be careful,
+any existing =init.el= in =.emacs.d= will be overwritten without
+further notice.
+
+*NOTE:* Do not make any permanent changes to =init.el= directly.
+
+#+begin_src emacs-lisp
+  ;; This file was generated from an org-mode file. Please make your
+  ;; changes there and compile it afterwards.
+#+end_src
+
+* Quick Settings
+
+This section defines some configuration variables for quick
+access. They are used in various different places all over this file.
+
+#+begin_src emacs-lisp
+  (defvar ludwigd/default-font-family "JetBrains Mono")
+  (defvar ludwigd/default-font-size 120)
+  (defvar ludwigd/default-color-theme nil)
+  (defvar ludwigd/default-line-numbers-type 'relative)
+#+end_src
+
+* Package System Setup
+
+Emacs has a built in package manager but it doesn't make it easy to
+automatically install packages on a new system the first time you pull
+down your configuration. [[https://github.com/jwiegley/use-package][use-package]] is a really helpful package used
+in this configuration to make it a lot easier to automate the
+installation and configuration of everything else we use.
+
+#+begin_src emacs-lisp
+  ;; Initialize package sources
+  (require 'package)
+  (setq package-archives '(("melpa" . "https://melpa.org/packages/")
+			   ("elpa" . "https://elpa.gnu.org/packages/")))
+
+  (package-initialize)
+  (unless package-archive-contents
+    (package-refresh-contents))
+
+  ;; Initialize use-package on non-Linux platforms
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
+
+  (require 'use-package)
+  (setq use-package-always-ensure t)  
+#+end_src
+
+* General Improvements
+
+This section handles general improvements to the Emacs UI that can be
+done without installing addtional packages.
+
+#+begin_src emacs-lisp
+  (setq inhibit-startup-screen t)
+
+  (tool-bar-mode -1)			; Disable the tool bar
+  (menu-bar-mode -1)			; Disable the menu bar
+  (scroll-bar-mode -1)			; Disable visible scroll bar
+  (set-fringe-mode 10)			; Give some breathing room
+  (setq frame-title-format "%b")	; Shorten the frame title
+
+  ;; Set a nice theme
+  (if ludwigd/default-color-theme
+      (load-theme ludwigd/default-color-theme))
+#+end_src
+
+** Line Numbers
+
+Line numbers are globally enabled in this config. To disable them for
+a specific mode, add the mode-hook to the list below.
+
+The type of line numbers can be adjusted in the [[*Quick Settings][Quick Settings]]. Viable
+options are ~'relative~ for relative line numbers, and ~t~ for linear
+ones. Choose ~nil~ to disable them completely.
+
+#+begin_src emacs-lisp
+  (column-number-mode 1)
+  (global-display-line-numbers-mode t)
+  (setq display-line-numbers-type ludwigd/default-line-numbers-type)
+
+  ;; Disable line numbers for some modes
+  (dolist (mode '(org-mode-hook
+		  term-mode-hook
+		  shell-mode-hook
+		  eshell-mode-hook))
+    (add-hook mode (lambda () (display-line-numbers-mode 0))))
+#+end_src
+
+** Font Configuration
+
+Use =C-x C-0= (or =M-x text-scale-adjust=) to adjust the font scale on
+the fly. Press =C-g= when you are done.
+
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil
+		      :font ludwigd/default-font-family
+		      :height ludwigd/default-font-size)
+#+end_src
+
+** Auto-Fill
+
+The minor mode =auto-fill-mode= is used to hard-wrap text at 80
+characters. This is obviously useful for text-modes, but not so much
+for prog-modes.
+
+#+begin_src emacs-lisp
+  (setq current-fill-column 80)
+  (add-hook 'text-mode-hook 'turn-on-auto-fill)
+#+end_src
+
+** Open new line above/below
+
+Known from Vim and very useful for programming. Actions are bound to
+=C-o= and =C-S-o=.
+
+#+begin_src emacs-lisp
+  (defun open-next-line (arg)
+    "Move to the next line and then opens a line.
+    See also `newline-and-indent'."
+    (interactive "p")
+    (end-of-line)
+    (open-line arg)
+    (forward-line 1)
+    (when newline-and-indent
+      (indent-according-to-mode)))
+
+  (defun open-previous-line (arg)
+    "Open a new line before the current one. 
+     See also `newline-and-indent'."
+    (interactive "p")
+    (beginning-of-line)
+    (open-line arg)
+    (when newline-and-indent
+      (indent-according-to-mode)))
+
+  (defvar newline-and-indent t
+    "Modify the behavior of the open-*-line functions to cause them to autoindent.")
+
+  (global-set-key (kbd "C-o") 'open-next-line)
+  (global-set-key (kbd "C-S-o") 'open-previous-line)
+#+end_src
+
+* UI Improvements
+
+Packages that improve the way you interact with Emacs.
+
+** Ace Window
+
+Emacs can split windows in a vertical or horizontal manner using the
+default keybindings =C-x 2= or =C-x 3=. Switching between windows is
+usually done by calling =other-window= which is bound to =C-x
+o=. However, when you have more than two windows, this solution is not
+sufficient.
+
+Luckily, [[https://github.com/abo-abo/ace-window][Ace Window]] comes to the rescue. Not only does it simplify
+switching between windows, it also lets you split, delete or move
+windows:
+
+- =x= \to delete window
+- =m= \to swap windows
+- =M= \to move window
+- =c= \to copy window
+- =j= \to select buffer
+- =n= \to select the previous window
+- =u= \to select buffer in the other window
+- =c= \to split window fairly, either vertically or horizontally
+- =v= \to split window vertically
+- =b= \to split window horizontally
+- =o= \to maximize current window
+- =?= \to show these command bindings
+
+The above commands to not always act on the current window. Instead,
+they are a prefix. For example, if you want to delete window =2=,
+press =M-o x 2=.
+
+Normally, calling =ace-window= with just two windows open, would run
+=other-window= and then exit. Setting =aw-dispatch-always= ensures
+that the additional functionality of =ace-window= is always available.
+  
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :bind (("M-o" . ace-window))
+    :config (setq aw-dispatch-always t))
+#+end_src
+
+** Which Key
+
+[[https://github.com/justbur/emacs-which-key][which-key]] is a useful UI panel that appears when you start pressing
+any key binding in Emacs to offer you all possible completions for the
+prefix.  For example, if you press =C-c= (hold control and press the
+letter =c=), a panel will appear at the bottom of the frame displaying
+all of the bindings under that prefix and which command they run.
+This is very useful for learning the possible key bindings in the mode
+of your current buffer.
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :defer 0
+    :diminish which-key-mode
+    :config
+    (which-key-mode)
+    (setq which-key-idle-delay 1))
+#+end_src
+
+** Ivy and Counsel
+
+[[https://oremacs.com/swiper][Ivy]] is an excellent completion framework for Emacs.  It provides a
+minimal yet powerful selection menu that appears when you open files,
+switch buffers, and for many other tasks in Emacs.  Counsel is a
+customized set of commands to replace `find-file` with
+`counsel-find-file`, etc which provide useful commands for each of the
+default completion commands.
+
+[[https://github.com/Yevgnen/ivy-rich][ivy-rich]] adds extra columns to a few of the Counsel commands to
+provide more information about each item.
+
+#+begin_src emacs-lisp
+  (use-package ivy
+    :diminish
+    :bind (("C-s" . swiper)
+	   :map ivy-minibuffer-map
+	   ("TAB" . ivy-alt-done)
+	   ("C-l" . ivy-alt-done)
+	   ("C-j" . ivy-next-line)
+	   ("C-k" . ivy-previous-line)
+	   :map ivy-switch-buffer-map
+	   ("C-k" . ivy-previous-line)
+	   ("C-l" . ivy-done)
+	   ("C-d" . ivy-switch-buffer-kill)
+	   :map ivy-reverse-i-search-map
+	   ("C-k" . ivy-previous-line)
+	   ("C-d" . ivy-reverse-i-search-kill))
+    :config
+    (ivy-mode 1))
+
+  (use-package ivy-rich
+    :after ivy
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package counsel
+    :bind (("C-M-j" . 'counsel-switch-buffer)
+	   :map minibuffer-local-map
+	   ("C-r" . 'counsel-minibuffer-history))
+    :custom
+    (counsel-linux-app-format-function #'counsel-linux-app-format-function-name-only)
+    :config
+    (counsel-mode 1))
+#+end_src
+
+* Development
+
+** Rainbow Delimiters
+
+The [[https://github.com/Fanael/rainbow-delimiters][Rainbow Delimiters]] package colorizes matching delimiters for
+better orientation.
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
+
+** Magit
+
+[[https://magit.vc][Magit]] is an extremely useful interface for Git. The following
+keybindings are set up automatically:
+
+- =C-x g= \to =magit-status= (like =git status= but on steroids)
+- =C-x M-g= \to =magit-dispatch=
+- =C-c M-g= \to =magit-file-dispatch=
+
+A nice walk-through article with many screenshots an explanations can
+be found [[https://emacsair.me/2017/09/01/magit-walk-through/][here]].
+
+#+begin_src emacs-lisp
+  (use-package magit
+    :config (setq magit-define-global-key-bindings t))
+#+end_src

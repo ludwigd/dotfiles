@@ -3,7 +3,7 @@
 
 (defvar ludwigd/default-font-family "JetBrains Mono")
 (defvar ludwigd/default-font-size 120)
-(defvar ludwigd/default-color-theme nil)
+(defvar ludwigd/default-color-theme 'leuven)
 (defvar ludwigd/default-line-numbers-type 'relative)
 
 ;; Initialize package sources

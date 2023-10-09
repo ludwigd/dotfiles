@@ -24,7 +24,7 @@ access. They are used in various different places all over this file.
 #+begin_src emacs-lisp
   (defvar ludwigd/default-font-family "JetBrains Mono")
   (defvar ludwigd/default-font-size 120)
-  (defvar ludwigd/default-color-theme nil)
+  (defvar ludwigd/default-color-theme 'leuven)
   (defvar ludwigd/default-line-numbers-type 'relative)
 #+end_src
 

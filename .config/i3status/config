@@ -15,8 +15,8 @@ general {
 order += "wireless _first_"
 order += "ethernet _first_"
 order += "battery all"
+order += "load"
 order += "disk /"
-# order += "load"
 order += "memory"
 order += "read_file brightness"
 order += "volume master"
@@ -62,9 +62,10 @@ load {
 }
 
 memory {
-        format = "%used | %available"
-        threshold_degraded = "1G"
-        format_degraded = "MEMORY < %available"
+        #format = "%used | %available"
+	format = "%percentage_used"
+        threshold_degraded = "10%"
+        format_degraded = "MEMORY LOW: %free"
 }
 
 tztime local {

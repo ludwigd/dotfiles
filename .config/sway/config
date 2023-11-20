@@ -39,9 +39,8 @@ exec /usr/libexec/polkit-mate-authentication-agent-1
 # Start a clipboard manager
 exec wl-paste -t text --watch clipman store --no-persist
 
-# Fix for GTK startup delay
-exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY SWAYSOCK
-exec hash dbus-update-environment 2>/dev/null && dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK
+# xdg-desktop-portal needs to know about the current desktop
+exec dbus-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # auto-reduce blue light
 exec gammastep -l 50.48:7.33

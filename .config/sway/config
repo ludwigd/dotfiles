@@ -40,7 +40,7 @@ exec /usr/libexec/polkit-mate-authentication-agent-1
 exec wl-paste -t text --watch clipman store --no-persist
 
 # xdg-desktop-portal needs to know about the current desktop
-exec dbus-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # auto-reduce blue light
 exec gammastep -l 50.48:7.33

@@ -76,6 +76,7 @@ bind index \Cd purge-message
 
 set editor = "vim"
 set edit_headers
+set reverse_name
 
 ####################
 # sidebar configuration

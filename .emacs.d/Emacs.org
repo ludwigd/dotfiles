@@ -285,3 +285,25 @@ be found [[https://emacsair.me/2017/09/01/magit-walk-through/][here]].
   (use-package magit
     :config (setq magit-define-global-key-bindings t))
 #+end_src
+
+** AUCTeX
+
+[[https://www.gnu.org/software/auctex/][AUCTeX]] is an extensible package for writing and formatting TeX files
+in GNU Emacs. It supports many different TeX macro packages, including
+AMS-TeX, LaTeX, Texinfo, ConTeXt, and docTeX (dtx files).
+
+AUCTeX includes preview-latex which makes LaTeX a tightly integrated
+component of your editing workflow by visualizing selected source
+chunks (such as single formulas or graphics) directly as images in the
+source buffer.  Auctex is a nice mode for LaTeX.
+
+In this configuration, AUCTeX has synctex enabled by default through
+==TeX-source-correlate-mode== and uses ==Zathura== to display the
+produced PDFs.
+
+#+begin_src emacs-lisp
+	(use-package tex
+	  :ensure auctex
+	  :hook (LaTeX-mode . TeX-source-correlate-mode)
+	  :config (setq TeX-view-program-selection '((output-pdf "Zathura"))))
+#+end_src

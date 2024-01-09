@@ -125,3 +125,8 @@
 
 (use-package magit
   :config (setq magit-define-global-key-bindings t))
+
+(use-package tex
+  :ensure auctex
+  :hook (LaTeX-mode . TeX-source-correlate-mode)
+  :config (setq TeX-view-program-selection '((output-pdf "Zathura"))))

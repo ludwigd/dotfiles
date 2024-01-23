@@ -15,7 +15,7 @@ set $right odiaeresis
 set $term foot
 
 # Your preferred application launcher
-set $menu "rofi -terminal $term -modes combi -combi-modes sway:yaws,drun -show combi"
+set $menu "rofi -terminal $term -modi combi -combi-modi sway:yaws,drun -show combi"
 
 # Font
 font pango:JetBrains Mono 11

@@ -21,8 +21,7 @@ set $menu "rofi -terminal $term -modi combi -combi-modi sway:yaws,drun -show com
 font pango:JetBrains Mono 11
 
 # Wallpaper
-output * bg ~/background.png fill
-#output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
+output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 
 ##############
 # Autostarts #

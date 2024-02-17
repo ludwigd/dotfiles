@@ -22,6 +22,7 @@ font pango:JetBrains Mono 11
 
 # Wallpaper
 output * bg ~/background.png fill
+#output * bg /usr/share/backgrounds/sway/Sway_Wallpaper_Blue_1920x1080.png fill
 
 ##############
 # Autostarts #
@@ -249,10 +250,9 @@ bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh
 bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
 # Use light to adjust screen brightness.
-set $light_step 10
-set $light_store light | cut -d. -f1 > /tmp/light.save
-bindsym XF86MonBrightnessUp exec light -A $light_step && $light_store
-bindsym XF86MonBrightnessDown exec light -U $light_step && $light_store
+set $light_store brightnessctl -m | cut -d',' -f4 > /tmp/light.save
+bindsym XF86MonBrightnessUp exec brightnessctl set +10% && $light_store
+bindsym XF86MonBrightnessDown exec brightnessctl set 10%- && $light_store
 
 # Store the screen brightness once on startup, so /tmp/light.save contains the correct value
 exec $light_store

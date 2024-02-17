@@ -23,7 +23,7 @@ order += "volume master"
 order += "tztime local"
 
 read_file brightness {
-          format = " %content\%"
+          format = " %content"
           path = "/tmp/light.save"
           max_characters = 5
 }

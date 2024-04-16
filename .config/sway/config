@@ -43,7 +43,7 @@ exec wl-paste -t text --watch clipman store --no-persist
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # auto-reduce blue light
-exec gammastep -l 50.48:7.33
+exec gammastep -l 50.48:7.33 -t 6500:4000
 
 # Display configuration daemon
 exec_always "killall -q kanshi; kanshi"
@@ -231,7 +231,7 @@ bar {
     colors {
         statusline #ffffff
         background #323232
-	#inactive_workspace #32323200 #32323200 #5c5c5c
+        #inactive_workspace #32323200 #32323200 #5c5c5c
     }
 }
 
@@ -263,7 +263,7 @@ bindsym $mod+Print exec grim
 bindsym XF86Display exec "killall -q kanshi; kanshi"
 
 # swaycaffeine
-bindsym $mod+i exec swaycaffeine
+bindsym $mod+i exec swaycaffeine -t
 bindsym $mod+Shift+i exec swaycaffeine --clear-all
 
 ###########################################################
@@ -272,3 +272,5 @@ bindsym $mod+Shift+i exec swaycaffeine --clear-all
 ###########################################################
 
 for_window [app_id="pavucontrol"] floating enable
+#for_window [app_id="firefox"] border none
+#for_window [class="Chromium-browser"] border none

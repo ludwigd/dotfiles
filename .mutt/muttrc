@@ -59,6 +59,13 @@ auto_view text/html
 unset markers
 
 ####################
+# search
+####################
+
+set header_cache="$HOME/.cache/mail"
+set message_cachedir="$HOME/.cache/mail"
+
+####################
 # index view configuration
 ####################
 
@@ -67,6 +74,7 @@ set sort_aux=last-date-received
 set sort_re
 set strict_threads
 set mark_old
+set pager_index_lines=10
 unset wait_key
 bind index \Cd purge-message
 
@@ -83,7 +91,7 @@ set reverse_name
 ####################
 
 set mail_check_stats
-set sidebar_visible 
+#set sidebar_visible 
 set sidebar_width = 20
 set sidebar_format = "%B%* %?N?%N/?%S"
 bind index,pager \Cp sidebar-prev

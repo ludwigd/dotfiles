@@ -3,7 +3,7 @@
 
 (defvar ludwigd/default-font-family "JetBrains Mono")
 (defvar ludwigd/default-font-size 120)
-(defvar ludwigd/default-color-theme 'leuven)
+(defvar ludwigd/default-color-theme 'wombat)
 (defvar ludwigd/default-line-numbers-type 'relative)
 
 ;; Initialize package sources
@@ -33,6 +33,11 @@
 ;; Set a nice theme
 (if ludwigd/default-color-theme
     (load-theme ludwigd/default-color-theme))
+
+(global-set-key [f12] 'theme-choose-variant)
+
+(setq-default tab-width 4)
+(setq-default indent-tabs-mode nil)
 
 (column-number-mode 1)
 (global-display-line-numbers-mode t)
@@ -129,4 +134,11 @@
 (use-package tex
   :ensure auctex
   :hook (LaTeX-mode . TeX-source-correlate-mode)
-  :config (setq TeX-view-program-selection '((output-pdf "Zathura"))))
+  :config
+  (add-to-list 'TeX-view-program-list '("mu-pdf" ("/usr/bin/mupdf" " %o" (mode-io-correlate " %(outpage)"))))
+  (setq TeX-view-program-selection '((output-pdf "mu-pdf"))))
+
+(use-package markdown-mode
+  :ensure t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "markdown"))

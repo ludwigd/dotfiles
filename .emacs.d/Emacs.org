@@ -24,7 +24,7 @@ access. They are used in various different places all over this file.
 #+begin_src emacs-lisp
   (defvar ludwigd/default-font-family "JetBrains Mono")
   (defvar ludwigd/default-font-size 120)
-  (defvar ludwigd/default-color-theme 'leuven)
+  (defvar ludwigd/default-color-theme 'wombat)
   (defvar ludwigd/default-line-numbers-type 'relative)
 #+end_src
 
@@ -71,6 +71,17 @@ done without installing addtional packages.
   ;; Set a nice theme
   (if ludwigd/default-color-theme
       (load-theme ludwigd/default-color-theme))
+
+  (global-set-key [f12] 'theme-choose-variant)
+#+end_src
+
+** Tabs
+
+Indent by 4 spaces. Also change the default indention function of =text-mode=.
+
+#+begin_src emacs-lisp
+  (setq-default tab-width 4)
+  (setq-default indent-tabs-mode nil)
 #+end_src
 
 ** Line Numbers
@@ -298,12 +309,27 @@ chunks (such as single formulas or graphics) directly as images in the
 source buffer.  Auctex is a nice mode for LaTeX.
 
 In this configuration, AUCTeX has synctex enabled by default through
-==TeX-source-correlate-mode== and uses ==Zathura== to display the
+==TeX-source-correlate-mode== and uses ==mupdf== to display the
 produced PDFs.
 
 #+begin_src emacs-lisp
-	(use-package tex
-	  :ensure auctex
-	  :hook (LaTeX-mode . TeX-source-correlate-mode)
-	  :config (setq TeX-view-program-selection '((output-pdf "Zathura"))))
+  (use-package tex
+    :ensure auctex
+    :hook (LaTeX-mode . TeX-source-correlate-mode)
+    :config
+    (add-to-list 'TeX-view-program-list '("mu-pdf" ("/usr/bin/mupdf" " %o" (mode-io-correlate " %(outpage)"))))
+    (setq TeX-view-program-selection '((output-pdf "mu-pdf"))))
+#+end_src
+
+** Markdown
+
+[[https://jblevins.org/projects/markdown-mode/][markdown-mode]] adds syntax highlighing and editing capabilites for .md
+files. It also contains a special mode for GitHub's markdown
+flavor. Requires =multimarkdown= installed on the host.
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :mode ("README\\.md\\'" . gfm-mode)
+    :init (setq markdown-command "markdown"))
 #+end_src

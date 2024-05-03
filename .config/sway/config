@@ -221,15 +221,8 @@ bindsym $mod+r mode "resize"
 ##############
 
 bar {
-    position top
     font pango:FontAwesome,JetBrains Mono 11
     status_command i3status
-    tray_output none
-    colors {
-        statusline #ffffff
-        background #323232
-        #inactive_workspace #32323200 #32323200 #5c5c5c
-    }
 }
 
 ######################

@@ -40,7 +40,7 @@ exec wl-paste -t text --watch clipman store --no-persist
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # auto-reduce blue light
-exec gammastep -l 50.48:7.33 -t 6500:4000
+exec_always gammastep -l 50.48:7.33 -m wayland -t 6000:2700
 
 # Display configuration daemon
 exec_always "killall -q kanshi; kanshi"

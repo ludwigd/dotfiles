@@ -136,7 +136,8 @@
   :hook (LaTeX-mode . TeX-source-correlate-mode)
   :config
   (add-to-list 'TeX-view-program-list '("mu-pdf" ("/usr/bin/mupdf" " %o" (mode-io-correlate " %(outpage)"))))
-  (setq TeX-view-program-selection '((output-pdf "mu-pdf"))))
+  (add-to-list 'TeX-view-program-list '("zathura" ("/usr/bin/zathura" " %o" (mode-io-correlate " %(outpage)"))))
+  (setq TeX-view-program-selection '((output-pdf "zathura"))))
 
 (use-package markdown-mode
   :ensure t

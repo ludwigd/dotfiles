@@ -253,7 +253,7 @@ bindsym $mod+Print exec grim
 bindsym XF86Display exec "killall -q kanshi; kanshi"
 
 # swaycaffeine
-bindsym $mod+i exec swaycaffeine -t
+bindsym $mod+i exec swaycaffeine -t -i visible
 bindsym $mod+Shift+i exec swaycaffeine --clear-all
 
 ###########################################################

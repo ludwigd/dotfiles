@@ -3,7 +3,7 @@
 
 (defvar ludwigd/default-font-family "JetBrains Mono")
 (defvar ludwigd/default-font-size 120)
-(defvar ludwigd/default-color-theme 'wombat)
+(defvar ludwigd/default-color-theme 'leuven)
 (defvar ludwigd/default-line-numbers-type 'relative)
 
 ;; Initialize package sources
@@ -50,9 +50,17 @@
 		eshell-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
+(set-fontset-font "fontset-default"
+                  (cons (decode-char 'ucs #xf000)
+                        (decode-char 'ucs #xf600))
+                  "FontAwesome")
+
+(set-fontset-font "fontset-default"
+                  'ascii ludwigd/default-font-family)
+
 (set-face-attribute 'default nil
-		    :font ludwigd/default-font-family
-		    :height ludwigd/default-font-size)
+                :font "fontset-default"
+                :height ludwigd/default-font-size)
 
 (setq current-fill-column 80)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)

@@ -7,7 +7,9 @@
 # If the above line is not correctly displayed, fix your editor first!
 
 general {
+        output_format = i3bar
         colors = true
+        markup = pango
         interval = 5
 }
 
@@ -39,7 +41,9 @@ path_exists VPN {
 }
 
 wireless _first_ {
-        format_up = "W: (%quality at %essid) %ip"
+        #format_up = "W: (%quality at %essid) %ip"
+        format_up = "W: %essid (%quality)"
+        format_quality = "%d%s"
         format_down = ""
 }
 
@@ -53,6 +57,8 @@ battery all {
         format_down = "No battery"
         last_full_capacity = true
         integer_battery_capacity = true
+        low_threshold = 15
+        threshold_type = percentage
 }
 
 disk "/" {

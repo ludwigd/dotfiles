@@ -20,6 +20,9 @@ set $menu "rofi -terminal $term -modi combi -combi-modi sway:yaws,drun -show com
 # Font
 font pango:JetBrains Mono 11
 
+# Background
+output * bg ~/background.png fill
+
 ##############
 # Autostarts #
 ##############
@@ -40,10 +43,13 @@ exec wl-paste -t text --watch clipman store --no-persist
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # auto-reduce blue light
-exec_always gammastep -l 50.48:7.33 -m wayland -t 6000:2700
+exec_always "killall -q gammastep; gammastep -l 50.48:7.33 -m wayland -t 6500:3600 -g 0.8"
 
 # Display configuration daemon
 exec_always "killall -q kanshi; kanshi"
+
+# Batmon
+exec ~/bin/batmon.py
 
 #######################
 # Input configuration #
@@ -221,8 +227,14 @@ bindsym $mod+r mode "resize"
 ##############
 
 bar {
+    position top
     font pango:FontAwesome,JetBrains Mono 11
     status_command i3status
+    tray_output none
+    colors {
+           statusline #ffffff
+           background #333333
+    }
 }
 
 ######################
@@ -239,7 +251,7 @@ bindsym XF86AudioMute exec pactl set-sink-mute @DEFAULT_SINK@ toggle && $refresh
 bindsym XF86AudioMicMute exec pactl set-source-mute @DEFAULT_SOURCE@ toggle && $refresh_i3status
 
 # Use light to adjust screen brightness.
-set $light_store brightnessctl -m | cut -d',' -f4 > /tmp/light.save
+set $light_store brightnessctl -m | awk -F',' '{print $4}' | tee /tmp/light.save
 bindsym XF86MonBrightnessUp exec brightnessctl set +10% && $light_store
 bindsym XF86MonBrightnessDown exec brightnessctl set 10%- && $light_store
 
@@ -262,5 +274,4 @@ bindsym $mod+Shift+i exec swaycaffeine --clear-all
 ###########################################################
 
 for_window [app_id="pavucontrol"] floating enable
-#for_window [app_id="firefox"] border none
-#for_window [class="Chromium-browser"] border none
+assign [app_id="firefox"] workspace number 1

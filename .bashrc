@@ -14,3 +14,6 @@ export PATH
 
 export EDITOR=vim
 export _JAVA_AWT_WM_NONREPARENTING=1
+
+# show the current command as window title on xterm compatible terminals
+trap 'printf "\033]0;%s\007" ${BASH_COMMAND}' DEBUG

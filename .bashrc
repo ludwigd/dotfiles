@@ -17,3 +17,9 @@ export _JAVA_AWT_WM_NONREPARENTING=1
 
 # show the current command as window title on xterm compatible terminals
 trap 'printf "\033]0;%s\007" ${BASH_COMMAND}' DEBUG
+
+# restore classic fedora prompt
+export PS1="[\u@\h \W]\\$ "
+
+# dotfiles alias
+alias dotfiles="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"

@@ -227,14 +227,9 @@ bindsym $mod+r mode "resize"
 ##############
 
 bar {
-    position top
-    font pango:FontAwesome,JetBrains Mono 11
+    font pango:JetBrains Mono 11
     status_command i3status
     tray_output none
-    colors {
-           statusline #ffffff
-           background #333333
-    }
 }
 
 ######################
@@ -260,9 +255,6 @@ exec $light_store
 
 # Screenshots
 bindsym $mod+Print exec grim
-
-# Display control
-bindsym XF86Display exec "killall -q kanshi; kanshi"
 
 # swaycaffeine
 bindsym $mod+i exec swaycaffeine -t -i visible

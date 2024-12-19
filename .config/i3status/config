@@ -7,9 +7,7 @@
 # If the above line is not correctly displayed, fix your editor first!
 
 general {
-        output_format = i3bar
         colors = true
-        markup = pango
         interval = 5
 }
 
@@ -25,7 +23,7 @@ order += "volume master"
 order += "tztime local"
 
 read_file brightness {
-          format = " %content"
+          format = "🔅 %content"
           path = "/tmp/light.save"
           max_characters = 5
 }
@@ -41,15 +39,14 @@ path_exists VPN {
 }
 
 wireless _first_ {
-        #format_up = "W: (%quality at %essid) %ip"
-        format_up = "W: %essid (%quality)"
+        format_up = "W: (%quality at %essid) %ip"
         format_quality = "%d%s"
-        format_down = ""
+	format_down = "W: down"
 }
 
 ethernet _first_ {
         format_up = "E: %ip (%speed)"
-        format_down = ""
+        format_down = "E: down"
 }
 
 battery all {
@@ -57,8 +54,7 @@ battery all {
         format_down = "No battery"
         last_full_capacity = true
         integer_battery_capacity = true
-        low_threshold = 15
-        threshold_type = percentage
+        low_threshold = 10
 }
 
 disk "/" {

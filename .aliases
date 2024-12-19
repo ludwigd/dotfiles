@@ -1,0 +1,16 @@
+# Changing directories
+alias ..="cd .."
+alias ~="cd ~"
+alias dl="cd ~/Downloads"
+
+# List all files in the current directory
+alias la="ls -la"
+
+# Stopwatch (thanks to @jessfraz)
+alias timer="echo 'Timer started. Stop with Ctrl-D.' && date && /usr/bin/time -f %E cat && date"
+
+# Dotfiles
+alias dotfiles="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
+
+# Default to mupdf-gl
+alias mupdf="mupdf-gl"

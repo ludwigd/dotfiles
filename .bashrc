@@ -15,11 +15,13 @@ export PATH
 export EDITOR=vim
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-# show the current command as window title on xterm compatible terminals
+# set current command as window title on xterm compatible terminals
 trap 'printf "\033]0;%s\007" ${BASH_COMMAND}' DEBUG
 
-# restore classic fedora prompt
-export PS1="[\u@\h \W]\\$ "
+# classic fedora prompt, but with highlighted workdir
+export PS1="[\u@\h \[\033[97m\]\w\[\033[0m\]]\\$ "
 
-# dotfiles alias
-alias dotfiles="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
+# user-defined aliases
+if [[ -f $HOME/.aliases ]]; then
+    source $HOME/.aliases
+fi

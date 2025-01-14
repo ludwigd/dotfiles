@@ -12,14 +12,14 @@ then
 fi
 export PATH
 
-export EDITOR=vim
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # set current command as window title on xterm compatible terminals
 trap 'printf "\033]0;%s\007" ${BASH_COMMAND}' DEBUG
 
-# classic fedora prompt, but with highlighted workdir
-export PS1="[\u@\h \[\033[97m\]\w\[\033[0m\]]\\$ "
+# set prompt color
+export PROMPT_COLOR='1;33'
+export PROMPT_DIR_COLOR='1;34'
 
 # user-defined aliases
 if [[ -f $HOME/.aliases ]]; then

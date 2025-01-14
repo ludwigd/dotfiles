@@ -21,7 +21,8 @@ set $menu "rofi -terminal $term -modi combi -combi-modi sway:yaws,drun -show com
 font pango:JetBrains Mono 11
 
 # Background
-output * bg ~/background.png fill
+#output * bg "#555555" solid_color
+output * bg /usr/share/backgrounds/default.png fill
 
 ##############
 # Autostarts #
@@ -40,7 +41,8 @@ exec /usr/libexec/polkit-mate-authentication-agent-1
 exec wl-paste -t text --watch clipman store --no-persist
 
 # xdg-desktop-portal needs to know about the current desktop
-exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+# NOTE: not needed if sway-systemd is enabled (Fedora only)
+#exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
 
 # auto-reduce blue light
 exec_always "killall -q gammastep; gammastep -l 50.48:7.33 -m wayland -t 6500:3600 -g 0.8"
@@ -227,9 +229,13 @@ bindsym $mod+r mode "resize"
 ##############
 
 bar {
+    position top
     font pango:JetBrains Mono 11
     status_command i3status
-    tray_output none
+    colors {
+        background #333333
+        statusline #ffffff
+    }
 }
 
 ######################

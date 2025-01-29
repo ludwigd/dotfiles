@@ -15,8 +15,8 @@ export PATH
 # make java apps work on sway
 export _JAVA_AWT_WM_NONREPARENTING=1
 
-# set current command as window title on xterm compatible terminals
-trap 'printf "\033]0;%s\007" ${BASH_COMMAND}' DEBUG
+# set default window title to 'user:pwd'
+export PROMPT_COMMAND='printf "\033]0;%s:%s\007" "${USER}" "${PWD/#$HOME/\~}"'
 
 # set prompt color
 export PROMPT_COLOR='1;33'

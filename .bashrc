@@ -33,3 +33,21 @@ fi
 if [[ -f $HOME/.aliases ]]; then
     source $HOME/.aliases
 fi
+
+# Quick and Dirty wrapper for udisks. Probably has some quirks.
+mnt () {
+    local name=$1
+    local device="/dev/$name"
+
+    if [[ -z "$name" ]]; then
+        lsblk
+    elif [[ -e $device ]]; then
+        if [[ -z "$(mount | grep $device)" ]]; then
+            udisksctl mount -b $device
+        else
+            udisksctl unmount -b $device
+        fi
+    else
+        echo "Device not found: $device"
+    fi
+}

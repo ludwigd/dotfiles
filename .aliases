@@ -12,5 +12,5 @@ alias timer="echo 'Timer started. Stop with Ctrl-D.' && date && /usr/bin/time -f
 # Dotfiles
 alias dotfiles="git --git-dir=$HOME/.dotfiles --work-tree=$HOME"
 
-# Default to mupdf-gl
-alias mupdf="mupdf-gl"
+# ranger is too long to type
+alias fm="ranger"

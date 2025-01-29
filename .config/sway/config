@@ -34,24 +34,12 @@ exec swayidle -w \
      timeout 600 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
      before-sleep 'swaylock -f'
 
-# Polkit authentication daemon
-exec /usr/libexec/polkit-mate-authentication-agent-1
-
 # Start a clipboard manager
 exec wl-paste -t text --watch clipman store --no-persist
 
 # xdg-desktop-portal needs to know about the current desktop
 # NOTE: not needed if sway-systemd is enabled (Fedora only)
 #exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
-
-# auto-reduce blue light
-exec_always "killall -q gammastep; gammastep -l 50.48:7.33 -m wayland -t 6500:3600 -g 0.8"
-
-# Display configuration daemon
-exec_always "killall -q kanshi; kanshi"
-
-# Batmon
-exec ~/bin/batmon.py
 
 #######################
 # Input configuration #

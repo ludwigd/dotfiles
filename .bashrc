@@ -12,6 +12,7 @@ then
 fi
 export PATH
 
+# make java apps work on sway
 export _JAVA_AWT_WM_NONREPARENTING=1
 
 # set current command as window title on xterm compatible terminals

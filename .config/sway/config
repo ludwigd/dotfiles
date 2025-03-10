@@ -21,8 +21,7 @@ set $menu "rofi -terminal $term -modi combi -combi-modi sway:yaws,drun -show com
 font pango:JetBrains Mono 11
 
 # Background
-output * bg "#000000" solid_color
-#output * bg /usr/share/backgrounds/default.png fill
+output * bg /usr/share/backgrounds/default.png fill
 
 ##############
 # Autostarts #
@@ -216,8 +215,12 @@ bindsym $mod+r mode "resize"
 ##############
 
 bar {
+    position top
     font pango:JetBrains Mono 11
     status_command i3status
+    colors {
+        background #333333
+    }
 }
 
 ######################

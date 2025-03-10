@@ -37,9 +37,8 @@ exec swayidle -w \
 # Start a clipboard manager
 exec wl-paste -t text --watch clipman store --no-persist
 
-# xdg-desktop-portal needs to know about the current desktop
-# NOTE: not needed if sway-systemd is enabled (Fedora only)
-#exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP=sway
+# see: https://github.com/swaywm/sway/wiki#systemd-and-dbus-activation-environments
+exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK
 
 #######################
 # Input configuration #

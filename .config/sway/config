@@ -257,4 +257,5 @@ bindsym $mod+Shift+i exec swaycaffeine --clear-all
 ###########################################################
 
 for_window [app_id="pavucontrol"] floating enable
+for_window [app_id="nm-connection-editor"] floating enable
 assign [app_id="firefox"] workspace number 1

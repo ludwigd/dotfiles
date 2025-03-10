@@ -111,19 +111,6 @@ ones. Choose ~nil~ to disable them completely.
 Use =C-x C-0= (or =M-x text-scale-adjust=) to adjust the font scale on
 the fly. Press =C-g= when you are done.
 
-*** Font Awesome
-
-FontAwesome is a popular iconic font. It uses the unicode range from
-~f000~ to (roughly) ~f600~. Emacs will only use the font for exactly
-that range.
-
-#+begin_src emacs-lisp
-  (set-fontset-font "fontset-default"
-                    (cons (decode-char 'ucs #xf000)
-                          (decode-char 'ucs #xf600))
-                    "FontAwesome")
-#+end_src
-
 *** Default Font and Size
 
 #+begin_src emacs-lisp
@@ -328,7 +315,7 @@ chunks (such as single formulas or graphics) directly as images in the
 source buffer.  Auctex is a nice mode for LaTeX.
 
 In this configuration, AUCTeX has synctex enabled by default through
-==TeX-source-correlate-mode== and uses ==mupdf== to display the
+==TeX-source-correlate-mode== and uses ==zathura== to display the
 produced PDFs.
 
 #+begin_src emacs-lisp
@@ -341,15 +328,48 @@ produced PDFs.
     (setq TeX-view-program-selection '((output-pdf "zathura"))))
 #+end_src
 
-** Markdown
+** Flycheck
 
-[[https://jblevins.org/projects/markdown-mode/][markdown-mode]] adds syntax highlighing and editing capabilites for .md
-files. It also contains a special mode for GitHub's markdown
-flavor. Requires =multimarkdown= installed on the host.
+[[https://www.flycheck.org][Flycheck]] is a modern on-the-fly syntax checking extension for GNU
+Emacs, intended as replacement for the older Flymake extension which
+is part of GNU Emacs.
 
 #+begin_src emacs-lisp
-  (use-package markdown-mode
+  (use-package flycheck
     :ensure t
-    :mode ("README\\.md\\'" . gfm-mode)
-    :init (setq markdown-command "markdown"))
+    :init
+    (global-flycheck-mode 1))
+#+end_src
+
+*** ShellCheck
+
+When using Flycheck together with [[https://shellcheck.net][ShellCheck]], it becomes handy to
+automatically silence the checker for /wanted/ behaviour. The
+[[https://blog.winny.tech/posts/shellcheck-with-emacs/][following script]] enables this per line using the =C-c ! k= shortcut.
+
+#+begin_src emacs-lisp
+  (require 'sh-script)                    ; For sh-mode-map
+
+  (defun winny--extract-shellcheck-error (err)
+    (and-let* (((eq (flycheck-error-checker err) 'sh-shellcheck)))
+      (flycheck-error-id err)))
+
+  (defun winny/shellcheck-disable-at-line ()
+    "Insert \"# shellcheck disable=SC...\" line to silence shellcheck errors."
+    (interactive)
+    (save-match-data
+      (save-excursion
+        (and-let* ((errs
+                    (cl-loop for err in (flycheck-overlay-errors-in (pos-bol) (pos-eol))
+                             if (winny--extract-shellcheck-error err)
+                             collect (winny--extract-shellcheck-error err))))
+          (beginning-of-line)
+          (insert (format "# shellcheck disable=%s"
+                          (mapconcat 'identity errs ",")))
+          (indent-according-to-mode)
+          (newline-and-indent)))))
+  
+  (add-hook 'sh-mode-hook
+            (defun winny--bind-shellcheck-disable ()
+              (define-key sh-mode-map (kbd "C-c ! k") 'winny/shellcheck-disable-at-line)))
 #+end_src

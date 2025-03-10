@@ -51,11 +51,6 @@
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (set-fontset-font "fontset-default"
-                  (cons (decode-char 'ucs #xf000)
-                        (decode-char 'ucs #xf600))
-                  "FontAwesome")
-
-(set-fontset-font "fontset-default"
                   'ascii ludwigd/default-font-family)
 
 (set-face-attribute 'default nil
@@ -148,7 +143,32 @@
   (add-to-list 'TeX-view-program-list '("zathura" ("/usr/bin/zathura" " %o" (mode-io-correlate " %(outpage)"))))
   (setq TeX-view-program-selection '((output-pdf "zathura"))))
 
-(use-package markdown-mode
+(use-package flycheck
   :ensure t
-  :mode ("README\\.md\\'" . gfm-mode)
-  :init (setq markdown-command "markdown"))
+  :init
+  (global-flycheck-mode 1))
+
+(require 'sh-script)                    ; For sh-mode-map
+
+(defun winny--extract-shellcheck-error (err)
+  (and-let* (((eq (flycheck-error-checker err) 'sh-shellcheck)))
+    (flycheck-error-id err)))
+
+(defun winny/shellcheck-disable-at-line ()
+  "Insert \"# shellcheck disable=SC...\" line to silence shellcheck errors."
+  (interactive)
+  (save-match-data
+    (save-excursion
+      (and-let* ((errs
+                  (cl-loop for err in (flycheck-overlay-errors-in (pos-bol) (pos-eol))
+                           if (winny--extract-shellcheck-error err)
+                           collect (winny--extract-shellcheck-error err))))
+        (beginning-of-line)
+        (insert (format "# shellcheck disable=%s"
+                        (mapconcat 'identity errs ",")))
+        (indent-according-to-mode)
+        (newline-and-indent)))))
+
+(add-hook 'sh-mode-hook
+          (defun winny--bind-shellcheck-disable ()
+            (define-key sh-mode-map (kbd "C-c ! k") 'winny/shellcheck-disable-at-line)))

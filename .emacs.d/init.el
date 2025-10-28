@@ -1,15 +1,10 @@
 ;; This file was generated from an org-mode file. Please make your
 ;; changes there and compile it afterwards.
 
-(defvar ludwigd/default-font-family "JetBrains Mono")
-(defvar ludwigd/default-font-size 120)
-(defvar ludwigd/default-color-theme 'leuven-dark)
-(defvar ludwigd/default-line-numbers-type 'relative)
-
 ;; Initialize package sources
 (require 'package)
 (setq package-archives '(("melpa" . "https://melpa.org/packages/")
-			 ("elpa" . "https://elpa.gnu.org/packages/")))
+  		   ("elpa" . "https://elpa.gnu.org/packages/")))
 
 (package-initialize)
 (unless package-archive-contents
@@ -28,34 +23,35 @@
 (menu-bar-mode -1)			; Disable the menu bar
 (scroll-bar-mode -1)			; Disable visible scroll bar
 (set-fringe-mode 10)			; Give some breathing room
-(setq frame-title-format "%b")	; Shorten the frame title
+(setq frame-title-format "%f")	; Shorten the frame title
 
-;; Set a nice theme
-(if ludwigd/default-color-theme
-    (load-theme ludwigd/default-color-theme))
+;; load the light variant
+(load-theme 'leuven)
 
-(global-set-key [f12] 'theme-choose-variant)
+;; quickly toggle between light and dark variant
+(define-key global-map (kbd "<f12>") #'theme-choose-variant)
 
 (setq-default tab-width 4)
 (setq-default indent-tabs-mode nil)
 
 (column-number-mode 1)
 (global-display-line-numbers-mode t)
-(setq display-line-numbers-type ludwigd/default-line-numbers-type)
+(setq display-line-numbers-type 'relative)
 
 ;; Disable line numbers for some modes
 (dolist (mode '(org-mode-hook
-		term-mode-hook
-		shell-mode-hook
-		eshell-mode-hook))
+	            term-mode-hook
+	            shell-mode-hook
+	            eshell-mode-hook
+                dired-sidebar-mode-hook))
   (add-hook mode (lambda () (display-line-numbers-mode 0))))
 
 (set-fontset-font "fontset-default"
-                  'ascii ludwigd/default-font-family)
+                  'ascii "JetBrains Mono")
 
 (set-face-attribute 'default nil
                 :font "fontset-default"
-                :height ludwigd/default-font-size)
+                :height 120)
 
 (setq current-fill-column 80)
 (add-hook 'text-mode-hook 'turn-on-auto-fill)
@@ -129,6 +125,13 @@
   :config
   (counsel-mode 1))
 
+(use-package lsp-mode
+  :init (setq lsp-enable-snippet nil)
+  :hook
+  ((python-mode . lsp)))
+
+(use-package lsp-ui)
+
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
@@ -136,12 +139,15 @@
   :config (setq magit-define-global-key-bindings t))
 
 (use-package tex
+  :defer t
   :ensure auctex
-  :hook (LaTeX-mode . TeX-source-correlate-mode)
+  :hook (LaTeX-mode . (lambda () (setq TeX-command-default "Rubber")))
   :config
-  (add-to-list 'TeX-view-program-list '("mu-pdf" ("/usr/bin/mupdf" " %o" (mode-io-correlate " %(outpage)"))))
+  (setq TeX-check-TeX nil)
   (add-to-list 'TeX-view-program-list '("zathura" ("/usr/bin/zathura" " %o" (mode-io-correlate " %(outpage)"))))
-  (setq TeX-view-program-selection '((output-pdf "zathura"))))
+  (setq TeX-view-program-selection '((output-pdf "zathura")))
+  (add-to-list 'TeX-command-list '("Rubber" "rubber -d %t" TeX-run-command nil t))
+  (add-to-list 'TeX-command-list '("Clean (Rubber)" "rubber --clean %t" TeX-run-command nil t)))
 
 (use-package flycheck
   :ensure t
@@ -172,3 +178,21 @@
 (add-hook 'sh-mode-hook
           (defun winny--bind-shellcheck-disable ()
             (define-key sh-mode-map (kbd "C-c ! k") 'winny/shellcheck-disable-at-line)))
+
+(use-package markdown-mode
+  :ensure t
+  :defer t
+  :mode ("README\\.md\\'" . gfm-mode)
+  :init (setq markdown-command "pandoc")
+  :bind (:map markdown-mode-map
+              ("C-c C-e" . markdown-do)))
+
+(use-package rustic
+  :ensure t
+  :defer t
+  :custom
+  (rustic-cargo-bin-remote rustic-cargo-bin)
+  (rustic-compile-command-remote rustic-compile-command)
+  (rustic-rustfmt-bin-remote rustic-rustfmt-bin))
+
+(require 'tramp)

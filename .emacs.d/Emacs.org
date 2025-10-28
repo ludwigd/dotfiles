@@ -16,18 +16,6 @@ further notice.
   ;; changes there and compile it afterwards.
 #+end_src
 
-* Quick Settings
-
-This section defines some configuration variables for quick
-access. They are used in various different places all over this file.
-
-#+begin_src emacs-lisp
-  (defvar ludwigd/default-font-family "JetBrains Mono")
-  (defvar ludwigd/default-font-size 120)
-  (defvar ludwigd/default-color-theme 'leuven-dark)
-  (defvar ludwigd/default-line-numbers-type 'relative)
-#+end_src
-
 * Package System Setup
 
 Emacs has a built in package manager but it doesn't make it easy to
@@ -66,13 +54,20 @@ done without installing addtional packages.
   (menu-bar-mode -1)			; Disable the menu bar
   (scroll-bar-mode -1)			; Disable visible scroll bar
   (set-fringe-mode 10)			; Give some breathing room
-  (setq frame-title-format "%b")	; Shorten the frame title
+  (setq frame-title-format "%f")	; Shorten the frame title
+#+end_src
 
-  ;; Set a nice theme
-  (if ludwigd/default-color-theme
-      (load-theme ludwigd/default-color-theme))
+** Theme
 
-  (global-set-key [f12] 'theme-choose-variant)
+Emacs comes with plenty of pre-installed themes. As of now, I'll stick
+with the great leuven theme, which comes in a light and dark variant.
+
+#+begin_src emacs-lisp
+  ;; load the light variant
+  (load-theme 'leuven)
+
+  ;; quickly toggle between light and dark variant
+  (define-key global-map (kbd "<f12>") #'theme-choose-variant)
 #+end_src
 
 ** Tabs
@@ -89,20 +84,21 @@ Indent by 4 spaces. Also change the default indention function of =text-mode=.
 Line numbers are globally enabled in this config. To disable them for
 a specific mode, add the mode-hook to the list below.
 
-The type of line numbers can be adjusted in the [[*Quick Settings][Quick Settings]]. Viable
-options are ~'relative~ for relative line numbers, and ~t~ for linear
-ones. Choose ~nil~ to disable them completely.
+The type of line numbers can be adjusted. Viable options are
+='relative= for relative line numbers, and =t= for linear ones. Choose
+=nil= to disable them completely.
 
 #+begin_src emacs-lisp
   (column-number-mode 1)
   (global-display-line-numbers-mode t)
-  (setq display-line-numbers-type ludwigd/default-line-numbers-type)
+  (setq display-line-numbers-type 'relative)
 
   ;; Disable line numbers for some modes
   (dolist (mode '(org-mode-hook
-		  term-mode-hook
-		  shell-mode-hook
-		  eshell-mode-hook))
+  	            term-mode-hook
+  	            shell-mode-hook
+  	            eshell-mode-hook
+                  dired-sidebar-mode-hook))
     (add-hook mode (lambda () (display-line-numbers-mode 0))))
 #+end_src
 
@@ -111,15 +107,13 @@ ones. Choose ~nil~ to disable them completely.
 Use =C-x C-0= (or =M-x text-scale-adjust=) to adjust the font scale on
 the fly. Press =C-g= when you are done.
 
-*** Default Font and Size
-
 #+begin_src emacs-lisp
   (set-fontset-font "fontset-default"
-                    'ascii ludwigd/default-font-family)
+                    'ascii "JetBrains Mono")
   
   (set-face-attribute 'default nil
                   :font "fontset-default"
-                  :height ludwigd/default-font-size)
+                  :height 120)
 #+end_src
 
 ** Auto-Fill
@@ -276,6 +270,22 @@ provide more information about each item.
 
 * Development
 
+** LSP mode
+
+[[https://emacs-lsp.github.io/lsp-mode/][lsp-mode]] is a minor mode for the language server protocol. It aims to
+provide IDE-like experience by providing optional integration with the
+most popular Emacs packages like company, flycheck and projectile. It
+also has a fancy UI, provided by [[https://emacs-lsp.github.io/lsp-ui/#intro][lsp-ui]].
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+    :init (setq lsp-enable-snippet nil)
+    :hook
+    ((python-mode . lsp)))
+
+  (use-package lsp-ui)
+#+end_src
+
 ** Rainbow Delimiters
 
 The [[https://github.com/Fanael/rainbow-delimiters][Rainbow Delimiters]] package colorizes matching delimiters for
@@ -314,18 +324,23 @@ component of your editing workflow by visualizing selected source
 chunks (such as single formulas or graphics) directly as images in the
 source buffer.  Auctex is a nice mode for LaTeX.
 
-In this configuration, AUCTeX has synctex enabled by default through
-==TeX-source-correlate-mode== and uses ==zathura== to display the
-produced PDFs.
+In this configuration, AUCTeX has synctex disabled by default (through
+not adding ==TeX-source-correlate-mode== to =LaTeX-mode-hook=) because
+I have TeXlive installed inside a container. To make things more easy,
+=rubber= is used as the default compiler. I use ==zathura== to display
+the produced PDFs.
 
 #+begin_src emacs-lisp
   (use-package tex
+    :defer t
     :ensure auctex
-    :hook (LaTeX-mode . TeX-source-correlate-mode)
+    :hook (LaTeX-mode . (lambda () (setq TeX-command-default "Rubber")))
     :config
-    (add-to-list 'TeX-view-program-list '("mu-pdf" ("/usr/bin/mupdf" " %o" (mode-io-correlate " %(outpage)"))))
+    (setq TeX-check-TeX nil)
     (add-to-list 'TeX-view-program-list '("zathura" ("/usr/bin/zathura" " %o" (mode-io-correlate " %(outpage)"))))
-    (setq TeX-view-program-selection '((output-pdf "zathura"))))
+    (setq TeX-view-program-selection '((output-pdf "zathura")))
+    (add-to-list 'TeX-command-list '("Rubber" "rubber -d %t" TeX-run-command nil t))
+    (add-to-list 'TeX-command-list '("Clean (Rubber)" "rubber --clean %t" TeX-run-command nil t)))
 #+end_src
 
 ** Flycheck
@@ -372,4 +387,44 @@ automatically silence the checker for /wanted/ behaviour. The
   (add-hook 'sh-mode-hook
             (defun winny--bind-shellcheck-disable ()
               (define-key sh-mode-map (kbd "C-c ! k") 'winny/shellcheck-disable-at-line)))
+#+end_src
+
+** Markdown
+
+[[https://jblevins.org/projects/markdown-mode/][markdown-mode]] is a major mode for editing Markdown-formatted text.
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :defer t
+    :mode ("README\\.md\\'" . gfm-mode)
+    :init (setq markdown-command "pandoc")
+    :bind (:map markdown-mode-map
+                ("C-c C-e" . markdown-do)))
+#+end_src
+
+** Rust
+
+[[https://github.com/emacs-rustic/rustic][rustic]] makes editing Rust code with Emacs enjoyable. This particular
+config has the remote path fixed, so it will play nicely with
+containers where the toolchain is installed using the package manager.
+
+#+begin_src emacs-lisp
+  (use-package rustic
+    :ensure t
+    :defer t
+    :custom
+    (rustic-cargo-bin-remote rustic-cargo-bin)
+    (rustic-compile-command-remote rustic-compile-command)
+    (rustic-rustfmt-bin-remote rustic-rustfmt-bin))
+#+end_src
+
+** TRAMP (remote editing)
+
+[[https://www.gnu.org/software/tramp/][TRAMP]] is for transparently accessing remote files from within
+Emacs. This is very useful if you want to bring Emacs to the
+Container party and shock all the VSCode fan boys.
+
+#+begin_src emacs-lisp
+  (require 'tramp)
 #+end_src

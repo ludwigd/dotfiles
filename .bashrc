@@ -12,9 +12,6 @@ then
 fi
 export PATH
 
-# make java apps work on sway
-export _JAVA_AWT_WM_NONREPARENTING=1
-
 # set default window title to 'user:pwd'
 export PROMPT_COMMAND='printf "\033]0;%s:%s\007" "${USER}" "${PWD/#$HOME/\~}"'
 
@@ -33,6 +30,9 @@ fi
 if [[ -f $HOME/.aliases ]]; then
     source $HOME/.aliases
 fi
+
+# enable autocd
+shopt -s autocd
 
 # Quick and Dirty wrapper for udisks. Probably has some quirks.
 mnt () {

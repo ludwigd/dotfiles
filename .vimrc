@@ -11,3 +11,8 @@ set noexpandtab
 
 " relative line numbers
 set rnu
+
+" always show the status bar
+set laststatus=2
+hi StatusLine ctermbg=white
+hi StatusLine ctermfg=black

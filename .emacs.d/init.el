@@ -17,8 +17,7 @@
 (require 'use-package)
 (setq use-package-always-ensure t)
 
-(setq inhibit-startup-screen t)
-
+(setq inhibit-startup-screen t)       ; start at scratch buffer
 (tool-bar-mode -1)			; Disable the tool bar
 (menu-bar-mode -1)			; Disable the menu bar
 (scroll-bar-mode -1)			; Disable visible scroll bar
@@ -26,7 +25,7 @@
 (setq frame-title-format "%f")	; Shorten the frame title
 
 ;; load the light variant
-(load-theme 'leuven)
+(load-theme 'modus-operandi-deuteranopia)
 
 ;; quickly toggle between light and dark variant
 (define-key global-map (kbd "<f12>") #'theme-choose-variant)
@@ -80,6 +79,41 @@
 
 (global-set-key (kbd "C-o") 'open-next-line)
 (global-set-key (kbd "C-S-o") 'open-previous-line)
+
+(defun swap-line-above (arg)
+  "Swaps the current line with the line above."
+  (interactive "p")
+  (if (> (line-number-at-pos) 1)
+      (progn
+        (let ((column (current-column)))
+          (kill-whole-line)
+          (previous-line arg)
+          (beginning-of-line)
+          (yank)
+          (previous-line)
+          (move-to-column column t))
+        (when newline-and-indent
+          (indent-according-to-mode)))
+    (message "Beginning of buffer")))
+
+(defun swap-line-below (arg)
+  "Swaps the current line with the line below."
+  (interactive "p")
+  (if (< (line-number-at-pos) (line-number-at-pos (point-max)))
+      (progn
+        (let ((column (current-column)))
+          (kill-whole-line)
+          (next-line arg)
+          (beginning-of-line)
+          (yank)
+          (previous-line)
+          (move-to-column column t))
+        (when newline-and-indent
+          (indent-according-to-mode)))
+    (message "End of buffer")))
+
+(global-set-key (kbd "M-p") 'swap-line-above)
+(global-set-key (kbd "M-n") 'swap-line-below)
 
 (use-package ace-window
   :bind (("M-o" . ace-window))
@@ -195,4 +229,37 @@
   (rustic-compile-command-remote rustic-compile-command)
   (rustic-rustfmt-bin-remote rustic-rustfmt-bin))
 
+(use-package dockerfile-mode
+  :defer t
+  :ensure t
+  :config
+  (setq dockerfile-mode-command "podman"))
+
+(use-package go-mode
+  :ensure t
+  :defer t)
+
 (require 'tramp)
+
+(use-package multiple-cursors
+  :ensure t
+  :config
+  (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+  (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+  (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+  (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   '(ace-window auctex counsel dockerfile-mode flycheck go-mode ivy-rich
+                lsp-ui magit multiple-cursors rainbow-delimiters
+                rustic)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )

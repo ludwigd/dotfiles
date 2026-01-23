@@ -48,8 +48,7 @@ This section handles general improvements to the Emacs UI that can be
 done without installing addtional packages.
 
 #+begin_src emacs-lisp
-  (setq inhibit-startup-screen t)
-
+  (setq inhibit-startup-screen t)       ; start at scratch buffer
   (tool-bar-mode -1)			; Disable the tool bar
   (menu-bar-mode -1)			; Disable the menu bar
   (scroll-bar-mode -1)			; Disable visible scroll bar
@@ -59,12 +58,14 @@ done without installing addtional packages.
 
 ** Theme
 
-Emacs comes with plenty of pre-installed themes. As of now, I'll stick
-with the great leuven theme, which comes in a light and dark variant.
+Emacs comes with plenty of pre-installed themes. As of lately, I use
+the [[https://protesilaos.com/emacs/modus-themes][Modus themes]]. They are designed for accessible readability and
+conform with the highest standard for color contrast between
+combinations of background and foreground values.
 
 #+begin_src emacs-lisp
   ;; load the light variant
-  (load-theme 'leuven)
+  (load-theme 'modus-operandi-deuteranopia)
 
   ;; quickly toggle between light and dark variant
   (define-key global-map (kbd "<f12>") #'theme-choose-variant)
@@ -72,7 +73,7 @@ with the great leuven theme, which comes in a light and dark variant.
 
 ** Tabs
 
-Indent by 4 spaces. Also change the default indention function of =text-mode=.
+Indent by 4(!) spaces(!).
 
 #+begin_src emacs-lisp
   (setq-default tab-width 4)
@@ -157,6 +158,49 @@ Known from Vim and very useful for programming. Actions are bound to
 
   (global-set-key (kbd "C-o") 'open-next-line)
   (global-set-key (kbd "C-S-o") 'open-previous-line)
+#+end_src
+
+** Move lines up and down
+
+This is something that I do /very/ often. Lines can be moved down
+using =M-n= or up using =M-p=. Can be prefixed to move the current
+line multiple lines up or down.
+
+#+begin_src emacs-lisp
+  (defun swap-line-above (arg)
+    "Swaps the current line with the line above."
+    (interactive "p")
+    (if (> (line-number-at-pos) 1)
+        (progn
+          (let ((column (current-column)))
+            (kill-whole-line)
+            (previous-line arg)
+            (beginning-of-line)
+            (yank)
+            (previous-line)
+            (move-to-column column t))
+          (when newline-and-indent
+            (indent-according-to-mode)))
+      (message "Beginning of buffer")))
+
+  (defun swap-line-below (arg)
+    "Swaps the current line with the line below."
+    (interactive "p")
+    (if (< (line-number-at-pos) (line-number-at-pos (point-max)))
+        (progn
+          (let ((column (current-column)))
+            (kill-whole-line)
+            (next-line arg)
+            (beginning-of-line)
+            (yank)
+            (previous-line)
+            (move-to-column column t))
+          (when newline-and-indent
+            (indent-according-to-mode)))
+      (message "End of buffer")))
+
+  (global-set-key (kbd "M-p") 'swap-line-above)
+  (global-set-key (kbd "M-n") 'swap-line-below)
 #+end_src
 
 * UI Improvements
@@ -419,6 +463,26 @@ containers where the toolchain is installed using the package manager.
     (rustic-rustfmt-bin-remote rustic-rustfmt-bin))
 #+end_src
 
+** Containerfile support
+
+#+begin_src emacs-lisp
+  (use-package dockerfile-mode
+    :defer t
+    :ensure t
+    :config
+    (setq dockerfile-mode-command "podman"))
+#+end_src
+
+** Go mode
+
+[[https://github.com/dominikh/go-mode.el][go-mode]] is an emacs mode for the Go programming language .
+
+#+begin_src emacs-lisp
+  (use-package go-mode
+    :ensure t
+    :defer t)
+#+end_src
+
 ** TRAMP (remote editing)
 
 [[https://www.gnu.org/software/tramp/][TRAMP]] is for transparently accessing remote files from within
@@ -427,4 +491,16 @@ Container party and shock all the VSCode fan boys.
 
 #+begin_src emacs-lisp
   (require 'tramp)
+#+end_src
+
+** Multiple Cursors
+
+#+begin_src emacs-lisp
+  (use-package multiple-cursors
+    :ensure t
+    :config
+    (global-set-key (kbd "C-S-c C-S-c") 'mc/edit-lines)
+    (global-set-key (kbd "C->") 'mc/mark-next-like-this)
+    (global-set-key (kbd "C-<") 'mc/mark-previous-like-this)
+    (global-set-key (kbd "C-c C-<") 'mc/mark-all-like-this))
 #+end_src

@@ -21,7 +21,7 @@ set $menu "rofi -terminal $term -modi combi -combi-modi sway:yaws,drun -show com
 font pango:JetBrains Mono 11
 
 # Background
-output * bg /usr/share/backgrounds/default.png fill
+output * bg /usr/share/backgrounds/default.jxl fill
 
 ##############
 # Autostarts #

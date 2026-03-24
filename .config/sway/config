@@ -39,6 +39,9 @@ exec wl-paste -t text --watch clipman store --no-persist
 # see: https://github.com/swaywm/sway/wiki#systemd-and-dbus-activation-environments
 exec dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP SWAYSOCK
 
+# systemd integration for desktop portals
+exec systemctl --user start sway-session.target
+
 #######################
 # Input configuration #
 #######################
